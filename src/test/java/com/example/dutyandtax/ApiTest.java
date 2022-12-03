@@ -118,8 +118,8 @@ public class ApiTest {
          * @result Backend should respond with 400 and provide information
          * that goods descriptions size should be between 3 and 512 bytes
          */
-        @ParameterizedTest
-        @DisplayName("Should try too short description for goods")
+        @ParameterizedTest(name = "#{index} - Run test with goods description with following strings= \"{0}\"")
+        @DisplayName("Should try too short or to long description for goods")
         @ValueSource(strings = {"I", "Op", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis nec tincidunt " +
                 "mauris. Phasellus nec lorem at odio rutrum mattis. Vestibulum porttitor varius tortor sed vestibulum. " +
                 "Suspendisse at tellus at nisi finibus eleifend. Maecenas ac pretium massa. Maecenas varius, nibh et scelerisque " +
@@ -148,7 +148,7 @@ public class ApiTest {
          *
          * @result Backend should respond with 200 for all provided doubles
          */
-        @ParameterizedTest(name = "{0}")
+        @ParameterizedTest(name = "#{index} - Run test with transportation price={0}")
         @DisplayName("Should try different values for currencies")
         @ValueSource(doubles = {0.1, 1000, 1234567890, Integer.MAX_VALUE})
         void shouldTryDifferentValuesForCurrencies(double value) {
