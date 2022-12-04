@@ -12,7 +12,7 @@ public class RequestRoot {
     private final String originCountry;
     private final String destinationCountry;
     private final String destinationRegion;
-    private final String additionalValueShare;
+    private String additionalValueShare;
     private final ArrayList<RequestGoods> goods;
     private final String date;
     private final boolean useDeMinimis;
@@ -96,5 +96,9 @@ public class RequestRoot {
 
     public void setTransportationPrice(double transportationPrice) {
         this.transportationPrice = transportationPrice;
+    }
+
+    public void setAdditionalValueShare(String addValueShare) {
+        this.additionalValueShare = addValueShare;
     }
 }

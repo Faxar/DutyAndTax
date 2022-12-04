@@ -164,6 +164,29 @@ public class ApiTest {
             softly.assertThat(responseCode.rows.get(0).message).isEqualTo("must be greater than or equal to 1");
             softly.assertAll();
         }
+        /**
+         * Test, if the backend will check for valid additional value share string, should be in the variants list
+         *
+         * @result Backend should respond with 400 and provide information
+         * that provided value string are not recognised within available variants
+         */
+        @Test
+        @DisplayName("Should try to pass wrong value to additionalValueShare")
+        void shouldTryToPassWrongValueToAdditionalValueShare() {
+            String addValueShare = "SOMETHING";
+            requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
+            requestRoot.get(0).setAdditionalValueShare(addValueShare);
+            Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(400));
+            ResponseCode400 responseCode = given()
+                    .body(requestRoot)
+                    .when()
+                    .post(PATH)
+                    .then().extract().as(ResponseCode400.class);
+            softly.assertThat(responseCode.type).isEqualTo("ARGUMENT_NOT_VALID");
+            softly.assertThat(responseCode.rows.get(0).reason).isEqualTo("InvalidValue");
+            softly.assertThat(responseCode.rows.get(0).message).isEqualTo("Value not recognized (" + addValueShare + "), please refer to specification for available values.");
+            softly.assertAll();
+        }
     }
 
     @Nested
@@ -201,6 +224,30 @@ public class ApiTest {
         @DisplayName("Should return 200 with matching externalId")
         void shouldReturn200withMatchingExternalId() {
             requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
+            Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(200));
+            ArrayList<ResponseRoot> responseRoot = given()
+                    .body(requestRoot)
+                    .when()
+                    .post(PATH)
+                    .then()
+                    .extract().as(new TypeRef<ArrayList<ResponseRoot>>() {
+                    });
+            softly.assertThat(responseRoot.get(0).getExternalId()).isEqualTo(requestRoot.get(0).getExternalId());
+            softly.assertThat(responseRoot.get(0).getGoods().get(0).getExternalId()).isEqualTo(requestRoot.get(0).getGoods().get(0).getExternalId());
+            softly.assertAll();
+        }
+
+        /**
+         * Test will check that additional value share can consume strings in range.
+         *
+         * @result Backend should respond with 200
+         */
+        @ParameterizedTest(name = "#{index} - Run test with additional value share variants={0}")
+        @DisplayName("Should try different additional value share")
+        @ValueSource(strings = {"MANUAL", "VALUE", "WEIGHT"})
+        void shouldTryDifferentAdditionalValueShare(String value) {
+            requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
+            requestRoot.get(0).setAdditionalValueShare(value);
             Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(200));
             ArrayList<ResponseRoot> responseRoot = given()
                     .body(requestRoot)
