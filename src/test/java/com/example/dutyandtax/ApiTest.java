@@ -47,7 +47,8 @@ public class ApiTest {
         /**
          * Test for not supported currency code
          *
-         * @result Backend should provide unauthorized response.
+         * @result Backend should reject unsupported currency code
+         * with information that this currency not found.
          */
         @Test
         @DisplayName("Should try not supported currency code")
@@ -62,6 +63,7 @@ public class ApiTest {
                     .then().extract().as(ResponseCode400.class);
 
             softly.assertThat(responseCode.type).isEqualTo("CONSTRAINT_VIOLATION");
+            softly.assertThat(responseCode.getRows().get(0).reason).isEqualTo("Currency");
             softly.assertThat(responseCode.getRows().get(0).message).isEqualTo("currency not found");
             softly.assertAll();
         }
@@ -91,10 +93,10 @@ public class ApiTest {
         }
 
         /**
-         * Test to check if backend  consume transportation price with negative value.
+         * Test to check if backend will not consume transportation price with negative value.
          *
          * @result Backend should respond with 400 and provide information
-         * that transportation price field could contain positive double.
+         * that transportation price field much contain positive double.
          */
         @Test
         @DisplayName("Should try negative value for currency")
@@ -113,7 +115,7 @@ public class ApiTest {
         }
 
         /**
-         * Test if backend will reject lower than minimal goods descriptions
+         * Test if backend will check length constrains for goods description
          *
          * @result Backend should respond with 400 and provide information
          * that goods descriptions size should be between 3 and 512 bytes
@@ -135,7 +137,31 @@ public class ApiTest {
                     .post(PATH)
                     .then().extract().as(ResponseCode400.class);
             softly.assertThat(responseCode.type).isEqualTo("CONSTRAINT_VIOLATION");
+            softly.assertThat(responseCode.rows.get(0).reason).isEqualTo("Size");
             softly.assertThat(responseCode.rows.get(0).message).isEqualTo("size must be between 3 and 512");
+            softly.assertAll();
+        }
+        /**
+         * Test if backend will check minimal quantity value
+         *
+         * @result Backend should respond with 400 and provide information
+         * that quantity number couldn't be <=0
+         */
+        @ParameterizedTest(name = "#{index} - Run test with quantity={0}")
+        @DisplayName("Should try to pass quantity with zero or negative values")
+        @ValueSource(ints = {-23, 0})
+        void shouldTryToPassQuantityWithZeroOrNegativeValues(int value) {
+            requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
+            requestRoot.get(0).getGoods().get(0).setQuantity(value);
+            Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(400));
+            ResponseCode400 responseCode = given()
+                    .body(requestRoot)
+                    .when()
+                    .post(PATH)
+                    .then().extract().as(ResponseCode400.class);
+            softly.assertThat(responseCode.type).isEqualTo("CONSTRAINT_VIOLATION");
+            softly.assertThat(responseCode.rows.get(0).reason).isEqualTo("Min");
+            softly.assertThat(responseCode.rows.get(0).message).isEqualTo("must be greater than or equal to 1");
             softly.assertAll();
         }
     }
