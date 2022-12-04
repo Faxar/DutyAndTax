@@ -7,15 +7,20 @@ import com.example.dutyandtax.apiData.responseData.ResponseCode400;
 import com.example.dutyandtax.apiData.responseData.ResponseCode401;
 import com.example.dutyandtax.apiData.responseData.ResponseRoot;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.request;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class ApiTest {
     ArrayList<RequestRoot> requestRoot;
@@ -259,6 +264,23 @@ public class ApiTest {
             softly.assertThat(responseRoot.get(0).getExternalId()).isEqualTo(requestRoot.get(0).getExternalId());
             softly.assertThat(responseRoot.get(0).getGoods().get(0).getExternalId()).isEqualTo(requestRoot.get(0).getGoods().get(0).getExternalId());
             softly.assertAll();
+        }
+        /**
+         * Simple test that checks work without POJO response class .
+         *
+         * @result Backend should respond with 200
+         */
+        @Test
+        @DisplayName("Should return 200 with no POJO response class (Plain Old Java Object)")
+        void shouldReturn200WithNoPOJO() {
+            requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
+            Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(200));
+            given()
+                    .body(requestRoot)
+                    .when()
+                    .post(PATH)
+                    .then().log().all()
+                    .body("externalId", containsInAnyOrder("123e4567-e89b-12d3-a456-426655440000"));
         }
     }
 }
