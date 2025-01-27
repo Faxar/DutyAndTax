@@ -7,18 +7,14 @@ import com.example.dutyandtax.apiData.responseData.ResponseCode400;
 import com.example.dutyandtax.apiData.responseData.ResponseCode401;
 import com.example.dutyandtax.apiData.responseData.ResponseRoot;
 import io.restassured.common.mapper.TypeRef;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.request;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -214,7 +210,7 @@ public class ApiTest {
                     .when()
                     .post(PATH)
                     .then()
-                    .extract().as(new TypeRef<ArrayList<ResponseRoot>>() {
+                    .extract().as(new TypeRef<>() {
                     });
             softly.assertThat(responseRoot.getFirst().getTotalDuties()).isGreaterThan(0.0);
         }
@@ -235,7 +231,7 @@ public class ApiTest {
                     .when()
                     .post(PATH)
                     .then()
-                    .extract().as(new TypeRef<ArrayList<ResponseRoot>>() {
+                    .extract().as(new TypeRef<>() {
                     });
             softly.assertThat(responseRoot.getFirst().getExternalId()).isEqualTo(requestRoot.getFirst().getExternalId());
             softly.assertThat(responseRoot.getFirst().getGoods().getFirst().getExternalId()).isEqualTo(requestRoot.getFirst().getGoods().getFirst().getExternalId());
@@ -259,7 +255,7 @@ public class ApiTest {
                     .when()
                     .post(PATH)
                     .then()
-                    .extract().as(new TypeRef<ArrayList<ResponseRoot>>() {
+                    .extract().as(new TypeRef<>() {
                     });
             softly.assertThat(responseRoot.getFirst().getExternalId()).isEqualTo(requestRoot.getFirst().getExternalId());
             softly.assertThat(responseRoot.getFirst().getGoods().getFirst().getExternalId()).isEqualTo(requestRoot.getFirst().getGoods().getFirst().getExternalId());
