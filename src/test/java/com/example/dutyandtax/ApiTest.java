@@ -59,7 +59,7 @@ public class ApiTest {
         @DisplayName("Should try not supported currency code")
         void shouldTryNotSupportedCurrencyCode() {
             requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
-            requestRoot.get(0).setOrderCurrency("MIK");
+            requestRoot.getFirst().setOrderCurrency("MIK");
             Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(400));
             ResponseCode400 responseCode = given()
                     .body(requestRoot)
@@ -68,8 +68,8 @@ public class ApiTest {
                     .then().extract().as(ResponseCode400.class);
 
             softly.assertThat(responseCode.type).isEqualTo("CONSTRAINT_VIOLATION");
-            softly.assertThat(responseCode.getRows().get(0).reason).isEqualTo("Currency");
-            softly.assertThat(responseCode.getRows().get(0).message).isEqualTo("currency not found");
+            softly.assertThat(responseCode.getRows().getFirst().reason).isEqualTo("Currency");
+            softly.assertThat(responseCode.getRows().getFirst().message).isEqualTo("currency not found");
             softly.assertAll();
         }
 
@@ -83,7 +83,7 @@ public class ApiTest {
         @DisplayName("Should try supported currency code in lowercase")
         void shouldTrySupportedCurrencyCodeInLowercase() {
             requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
-            requestRoot.get(0).setOrderCurrency("usd");
+            requestRoot.getFirst().setOrderCurrency("usd");
             Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(400));
             ResponseCode400 responseCode = given()
                     .body(requestRoot)
@@ -92,8 +92,8 @@ public class ApiTest {
                     .then().extract().as(ResponseCode400.class);
 
             softly.assertThat(responseCode.type).isEqualTo("CONSTRAINT_VIOLATION");
-            softly.assertThat(responseCode.getRows().get(0).reason).isEqualTo("Uppercase");
-            softly.assertThat(responseCode.getRows().get(0).message).isEqualTo("string must be uppercase");
+            softly.assertThat(responseCode.getRows().getFirst().reason).isEqualTo("Uppercase");
+            softly.assertThat(responseCode.getRows().getFirst().message).isEqualTo("string must be uppercase");
             softly.assertAll();
         }
 
@@ -107,15 +107,15 @@ public class ApiTest {
         @DisplayName("Should try negative value for currency")
         void shouldTryNegativeValueForCurrency() {
             requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
-            requestRoot.get(0).setTransportationPrice(-45);
+            requestRoot.getFirst().setTransportationPrice(-45);
             Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(400));
             ResponseCode400 responseCode = given()
                     .body(requestRoot)
                     .when()
                     .post(PATH)
                     .then().extract().as(ResponseCode400.class);
-            softly.assertThat(responseCode.getRows().get(0).field).isEqualTo("transportationPrice");
-            softly.assertThat(responseCode.getRows().get(0).message).isEqualTo("must be greater than or equal to 0.0");
+            softly.assertThat(responseCode.getRows().getFirst().field).isEqualTo("transportationPrice");
+            softly.assertThat(responseCode.getRows().getFirst().message).isEqualTo("must be greater than or equal to 0.0");
             softly.assertAll();
         }
 
@@ -134,7 +134,7 @@ public class ApiTest {
                 "elementum. Ut sodales varius nisi, eu malesuada lectus. Pellentesque sit amet malesuada dui, vitae sodales sed."})
         void shouldTryTooShortDescriptionForGoods(String testString) {
             requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
-            requestRoot.get(0).getGoods().get(0).setDescription(testString);
+            requestRoot.getFirst().getGoods().getFirst().setDescription(testString);
             Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(400));
             ResponseCode400 responseCode = given()
                     .body(requestRoot)
@@ -142,8 +142,8 @@ public class ApiTest {
                     .post(PATH)
                     .then().extract().as(ResponseCode400.class);
             softly.assertThat(responseCode.type).isEqualTo("CONSTRAINT_VIOLATION");
-            softly.assertThat(responseCode.rows.get(0).reason).isEqualTo("Size");
-            softly.assertThat(responseCode.rows.get(0).message).isEqualTo("size must be between 3 and 512");
+            softly.assertThat(responseCode.rows.getFirst().reason).isEqualTo("Size");
+            softly.assertThat(responseCode.rows.getFirst().message).isEqualTo("size must be between 3 and 512");
             softly.assertAll();
         }
         /**
@@ -157,7 +157,7 @@ public class ApiTest {
         @ValueSource(ints = {-23, 0})
         void shouldTryToPassQuantityWithZeroOrNegativeValues(int value) {
             requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
-            requestRoot.get(0).getGoods().get(0).setQuantity(value);
+            requestRoot.getFirst().getGoods().getFirst().setQuantity(value);
             Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(400));
             ResponseCode400 responseCode = given()
                     .body(requestRoot)
@@ -165,8 +165,8 @@ public class ApiTest {
                     .post(PATH)
                     .then().extract().as(ResponseCode400.class);
             softly.assertThat(responseCode.type).isEqualTo("CONSTRAINT_VIOLATION");
-            softly.assertThat(responseCode.rows.get(0).reason).isEqualTo("Min");
-            softly.assertThat(responseCode.rows.get(0).message).isEqualTo("must be greater than or equal to 1");
+            softly.assertThat(responseCode.rows.getFirst().reason).isEqualTo("Min");
+            softly.assertThat(responseCode.rows.getFirst().message).isEqualTo("must be greater than or equal to 1");
             softly.assertAll();
         }
         /**
@@ -180,7 +180,7 @@ public class ApiTest {
         void shouldTryToPassWrongValueToAdditionalValueShare() {
             String addValueShare = "SOMETHING";
             requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
-            requestRoot.get(0).setAdditionalValueShare(addValueShare);
+            requestRoot.getFirst().setAdditionalValueShare(addValueShare);
             Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(400));
             ResponseCode400 responseCode = given()
                     .body(requestRoot)
@@ -188,8 +188,8 @@ public class ApiTest {
                     .post(PATH)
                     .then().extract().as(ResponseCode400.class);
             softly.assertThat(responseCode.type).isEqualTo("ARGUMENT_NOT_VALID");
-            softly.assertThat(responseCode.rows.get(0).reason).isEqualTo("InvalidValue");
-            softly.assertThat(responseCode.rows.get(0).message).isEqualTo("Value not recognized (" + addValueShare + "), please refer to specification for available values.");
+            softly.assertThat(responseCode.rows.getFirst().reason).isEqualTo("InvalidValue");
+            softly.assertThat(responseCode.rows.getFirst().message).isEqualTo("Value not recognized (" + addValueShare + "), please refer to specification for available values.");
             softly.assertAll();
         }
     }
@@ -207,7 +207,7 @@ public class ApiTest {
         @ValueSource(doubles = {0.1, 1000, 1234567890, Integer.MAX_VALUE})
         void shouldTryDifferentValuesForCurrencies(double value) {
             requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
-            requestRoot.get(0).setTransportationPrice(value);
+            requestRoot.getFirst().setTransportationPrice(value);
             Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(200));
             ArrayList<ResponseRoot> responseRoot = given()
                     .body(requestRoot)
@@ -216,7 +216,7 @@ public class ApiTest {
                     .then()
                     .extract().as(new TypeRef<ArrayList<ResponseRoot>>() {
                     });
-            softly.assertThat(responseRoot.get(0).getTotalDuties()).isGreaterThan(0.0);
+            softly.assertThat(responseRoot.getFirst().getTotalDuties()).isGreaterThan(0.0);
         }
 
         /**
@@ -237,8 +237,8 @@ public class ApiTest {
                     .then()
                     .extract().as(new TypeRef<ArrayList<ResponseRoot>>() {
                     });
-            softly.assertThat(responseRoot.get(0).getExternalId()).isEqualTo(requestRoot.get(0).getExternalId());
-            softly.assertThat(responseRoot.get(0).getGoods().get(0).getExternalId()).isEqualTo(requestRoot.get(0).getGoods().get(0).getExternalId());
+            softly.assertThat(responseRoot.getFirst().getExternalId()).isEqualTo(requestRoot.getFirst().getExternalId());
+            softly.assertThat(responseRoot.getFirst().getGoods().getFirst().getExternalId()).isEqualTo(requestRoot.getFirst().getGoods().getFirst().getExternalId());
             softly.assertAll();
         }
 
@@ -252,7 +252,7 @@ public class ApiTest {
         @ValueSource(strings = {"MANUAL", "VALUE", "WEIGHT"})
         void shouldTryDifferentAdditionalValueShare(String value) {
             requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
-            requestRoot.get(0).setAdditionalValueShare(value);
+            requestRoot.getFirst().setAdditionalValueShare(value);
             Specifications.installSpec(Specifications.requestSpec(URL), Specifications.responseSpec(200));
             ArrayList<ResponseRoot> responseRoot = given()
                     .body(requestRoot)
@@ -261,8 +261,8 @@ public class ApiTest {
                     .then()
                     .extract().as(new TypeRef<ArrayList<ResponseRoot>>() {
                     });
-            softly.assertThat(responseRoot.get(0).getExternalId()).isEqualTo(requestRoot.get(0).getExternalId());
-            softly.assertThat(responseRoot.get(0).getGoods().get(0).getExternalId()).isEqualTo(requestRoot.get(0).getGoods().get(0).getExternalId());
+            softly.assertThat(responseRoot.getFirst().getExternalId()).isEqualTo(requestRoot.getFirst().getExternalId());
+            softly.assertThat(responseRoot.getFirst().getGoods().getFirst().getExternalId()).isEqualTo(requestRoot.getFirst().getGoods().getFirst().getExternalId());
             softly.assertAll();
         }
         /**
