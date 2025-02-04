@@ -6,6 +6,7 @@ import com.example.dutyandtax.apiData.requestData.RequestRoot;
 import com.example.dutyandtax.apiData.responseData.ResponseCode400;
 import com.example.dutyandtax.apiData.responseData.ResponseCode401;
 import com.example.dutyandtax.apiData.responseData.ResponseRoot;
+import com.google.common.collect.ImmutableMap;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
@@ -14,9 +15,11 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.testng.annotations.BeforeSuite;
 
 import java.util.ArrayList;
 
+import static com.github.automatedowl.tools.AllureEnvironmentWriter.allureEnvironmentWriter;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -27,6 +30,16 @@ public class ApiTest {
     SoftAssertions softly = new SoftAssertions();
     private final static String URL = "https://api.integration.eurora.com";
     private final static String PATH = "customs-calculator/v1/shopping-cart";
+
+    @BeforeSuite
+    void setUp() {
+        allureEnvironmentWriter(
+                ImmutableMap.<String, String>builder()
+                        .put("Browser", "Chrome")
+                        .put("Browser.Version", "87.0.4280.88")
+                        .put("URL", "https://eliasnogueira.com")
+                        .build());
+    }
 
     /**
      * Checks for unauthorized access.

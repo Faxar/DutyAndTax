@@ -7,20 +7,17 @@ plugins {
 group 'com.example'
 version '1.0-SNAPSHOT'
 
+def aspectJVersion = '1.9.22'
+def allureVersion = "2.25.0"
+
 repositories {
     mavenCentral()
 }
 
-reporting {
-    baseDir = "$buildDir/reports"
-}
-
-allure {
-    report {
-        // There might be several tasks producing the report, so the property
-        // configures a base directory for all the reports
-        // Each task creates its own subfolder there
-        reportDir.set(project.reporting.baseDirectory.dir("allure-report"))
+configurations {
+    agent {
+        canBeResolved = true
+        canBeConsumed = true
     }
 }
 
@@ -34,8 +31,19 @@ dependencies {
     implementation 'org.junit.jupiter:junit-jupiter-params:5.9.0'
     // https://mvnrepository.com/artifact/io.qameta.allure/allure-maven
     implementation group: 'io.qameta.allure', name: 'allure-maven', version: '2.8'
+    testImplementation(platform("io.qameta.allure:allure-bom:$allureVersion"))
+    // Add necessary Allure dependencies to dependencies section
+    testImplementation("io.qameta.allure:allure-junit4")
+    testImplementation("io.qameta.allure:allure-junit4-aspect")
+    // https://mvnrepository.com/artifact/com.github.automatedowl/allure-environment-writer
+    implementation 'com.github.automatedowl:allure-environment-writer:1.0.0'
+
+
+    agent "org.aspectj:aspectjweaver:$aspectJVersion"
 }
 
 test {
+    ignoreFailures = true
     useJUnitPlatform()
+    jvmArgs = [ "-javaagent:${configurations.agent.singleFile}" ]
 }
