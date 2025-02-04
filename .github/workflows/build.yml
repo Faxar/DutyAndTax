@@ -1,12 +1,6 @@
 name: Build
 
-on:
-  pull_request:
-    branches:
-      "master"
-  push:
-    branches:
-      "master"
+on: [push]
 
 jobs:
   test:
@@ -23,7 +17,7 @@ jobs:
         run: ./gradlew clean test
 
       - name: Copy history
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         if: always()
         continue-on-error: true
         with:
@@ -31,13 +25,12 @@ jobs:
           path: gh-pages
 
       - name: Build Report
-        uses: simple-elf/allure-report-action@master
+        uses: simple-elf/allure-report-action@v1.7
         if: always()
         with:
-          allure_results: build/allure-results
           gh_pages: gh-pages
           allure_history: allure-history
-          keep_reports: '20'
+          allure_results: allure-results
 
       - name: Publish Report
         if: always()
