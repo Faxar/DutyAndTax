@@ -6,6 +6,9 @@ import com.example.dutyandtax.apiData.requestData.RequestRoot;
 import com.example.dutyandtax.apiData.responseData.ResponseCode400;
 import com.example.dutyandtax.apiData.responseData.ResponseCode401;
 import com.example.dutyandtax.apiData.responseData.ResponseRoot;
+import io.qameta.allure.Description;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import io.restassured.common.mapper.TypeRef;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
@@ -14,6 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -30,8 +34,11 @@ public class ApiTest {
      * @result Backend should provide unauthorized response.
      */
     @Test
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Something")
     @DisplayName("Should return unauthorized 401")
     void shouldReturnUnauthorized401() {
+        step("Test step");
         requestRoot = new TestRequestAndResponseGenerator().getRequestRoot();
         Specifications.installSpec(Specifications.requestWithoutAuthSpec(URL), Specifications.responseSpec(401));
         ResponseCode401 responseCode = given()
