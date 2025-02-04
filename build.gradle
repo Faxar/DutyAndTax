@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id("io.qameta.allure") version "2.12.0"
+    id("io.qameta.allure-report") version "2.12.0"
 }
 
 group 'com.example'
@@ -8,6 +9,19 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+}
+
+reporting {
+    baseDir = "$buildDir/reports"
+}
+
+allure {
+    report {
+        // There might be several tasks producing the report, so the property
+        // configures a base directory for all the reports
+        // Each task creates its own subfolder there
+        reportDir.set(project.reporting.baseDirectory.dir("allure-report"))
+    }
 }
 
 dependencies {
