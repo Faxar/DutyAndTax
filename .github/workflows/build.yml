@@ -8,10 +8,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: actions/cache@v1
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gradle/caches
+          key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('**/build.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.workflow }}-
+
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '17'
+
+      - name: Install dependencies
+        run: ./gradlew compileTestJava
 
       - name: Run tests
         run: ./gradlew clean test
