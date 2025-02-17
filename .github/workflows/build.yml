@@ -29,14 +29,17 @@ jobs:
         run: ./gradlew clean test
 
       - name: Generate Allure report
+        continue-on-error: true
         run: ./gradlew allureReport
 
       - name: Copy Allure report to docs
+        continue-on-error: true
         run: |
             mkdir -p docs/allure-report # Create directory if it doesn't exist
             cp -r build/allure-report/* docs/allure-report/
 
       - name: Deploy to GitHub Pages
+        continue-on-error: true
         uses: peaceiris/actions-gh-pages@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
