@@ -28,26 +28,17 @@ jobs:
       - name: Run tests
         run: ./gradlew clean test
 
-      - name: Copy history
-        uses: actions/checkout@v3
-        if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
+      - name: Generate Allure report
+        run: ./gradlew allureReport
 
-      - name: Build Report
-        uses: simple-elf/allure-report-action@v1.7
-        if: always()
-        with:
-          gh_pages: gh-pages
-          allure_history: allure-history
-          allure_results: build/allure-results
+      - name: Copy Allure report to docs
+        run: |
+            mkdir -p docs/allure-report # Create directory if it doesn't exist
+            cp -r build/allure-report/* docs/allure-report/
 
-      - name: Publish Report
-        if: always()
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
           publish_branch: gh-pages
-          publish_dir: allure-history
